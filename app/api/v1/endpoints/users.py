@@ -3,6 +3,7 @@ import traceback
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
+from app.api.v1.deps import get_current_user
 from app.core.oauth.hashing import verify, bcrypt
 from app.core.oauth.jwttoken import create_access_token
 from app.database.crud.crud_users import CRUDUsers
@@ -15,6 +16,10 @@ router = APIRouter()
 
 class User(BaseModel):
     username: str
+    password: str
+
+
+class Password(BaseModel):
     password: str
 
 
@@ -33,6 +38,21 @@ async def login(request: OAuth2PasswordRequestForm = Depends()):
             }
     access_token = create_access_token(data=data)
     return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
+
+
+@router.post('/change-user-password')
+def change_user_password(password: Password, current_user=Depends(get_current_user)):
+
+    try:
+        user_id = current_user.get("user_id")
+        hashed_pass = bcrypt(password.password)
+        CRUDUsers.update_password(user_id, user_id, hashed_pass)
+
+        return FastApiResponse.successful
+
+    except Exception as e:
+        print(f"Error: {e}", traceback.format_exc())
+        return FastApiResponse.failure(str(e))
 
 
 @router.post('/create-user')

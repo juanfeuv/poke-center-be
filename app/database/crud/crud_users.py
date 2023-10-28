@@ -51,3 +51,17 @@ class CRUDUsers:
         except Exception as e:
             print(f"Error: {e}")
             raise e
+        
+    
+    @staticmethod
+    def update_password(user_id, new_password):
+        query = {
+            "_id": user_id,
+        }
+        try:
+            updator = {
+                f"set__password": new_password
+            }
+            Users.objects(**query).update(**updator)
+        except Exception as e:
+            raise e
