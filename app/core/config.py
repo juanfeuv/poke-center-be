@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     API_VERSION: str = "/api/v1"
     DATABASE = "poke-center"
     DB_ALIAS = "poke-center"
-    MONGODB_URI: str = os.environ.get('CONNECCTION_STRING') | ""
+    MONGODB_URI: str = os.environ.get('CONNECCTION_STRING')
     TOKEN_EXPIRY = 10080
     ALGORITHM = "HS256"
     SECRET_KEY = "3426058954gadfsgkfdpghuirbajwf40856s"
