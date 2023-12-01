@@ -56,6 +56,7 @@ class CRUDAtenciones:
             data = list(map(lambda transaction: transaction.to_mongo(), data))
 
             turns_with_numbers = list(filter(lambda x: x.get("turnNumber"), data))
+            turns_with_numbers = list(map(lambda x: x | { "new_turnNumber": x.get("turnNumber") - 1 }, turns_with_numbers))
             turns_with_no_numbers = list(filter(lambda x: not x.get("turnNumber"), data))
 
             # Sort the list of dictionaries by "turnNumber" in ascending order
@@ -63,7 +64,7 @@ class CRUDAtenciones:
 
             merged_list = sorted(
                 turns_with_no_numbers + turns_with_numbers,
-                key=lambda x: (x.get("turnNumber", 0), x)  # Prioritize by turnNumber and then keep original order
+                key=lambda x: (x.get("new_turnNumber", 0), x)  # Prioritize by turnNumber and then keep original order
             )
 
             return merged_list
