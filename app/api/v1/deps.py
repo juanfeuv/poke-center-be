@@ -5,7 +5,7 @@ from starlette import status
 from app.core.config import settings
 from app.core.oauth.jwttoken import verify_token
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_VERSION}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_VERSION}/users/login")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):

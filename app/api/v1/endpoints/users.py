@@ -24,20 +24,24 @@ class Password(BaseModel):
 
 
 @router.post('/login')
-async def login(request: OAuth2PasswordRequestForm = Depends()):
-    user = CRUDUsers.get_by_username(username=request.username)
-    user_id = user.id
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'No user found with this {request.username} username')
-    if not verify(request.password, user["password"]):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'Wrong Username or password')
-    data = {"username": user["username"],
-            "user_id": str(user_id)
-            }
-    access_token = create_access_token(data=data)
-    return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
+def login(request: OAuth2PasswordRequestForm = Depends()):
+    try:
+        user = CRUDUsers.get_by_username(username=request.username)
+        user_id = user.id
+        if not user:
+            raise HTTPException(status_code=400,
+                                detail=f'No user found with this {request.username} username')
+        if not verify(request.password, user["password"]):
+            raise HTTPException(status_code=400,
+                                detail=f'Wrong Username or password')
+        data = {"username": user["username"],
+                "user_id": str(user_id)
+                }
+        access_token = create_access_token(data=data)
+        return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
+    except Exception as e:
+        print(f"error {e}")
+        return FastApiResponse.failure(str(e))
 
 
 @router.post('/change-user-password')
