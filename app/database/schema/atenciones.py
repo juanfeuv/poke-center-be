@@ -13,11 +13,11 @@ class Atenciones(Document):
     createdAt = DateTimeField(default=datetime.datetime.now)
     pokemonId = IntField(required=True)
     pokemonInfo = DictField(required=False, default={})
-    turnNumber = IntField(required=False)
+    turnNumber = IntField(required=True)
     rawId = IntField(required=True)
     estado = StringField(required=False)
     comment = StringField(required=False)
-    fechaAtencion = DateTimeField(default=datetime.datetime.now)
+    fechaAtencion = DateTimeField(required=False)
     user_id = StringField(required=True)
     meta = {
         "db_alias": settings.DB_ALIAS,

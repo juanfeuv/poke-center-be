@@ -55,6 +55,7 @@ def crear_atencion(atencion: Atencion, current_user=Depends(get_current_user)):
     try:
         user_id = current_user.get("user_id")
         id_generated = int(time.time() * 1000)
+        new_turn = CRUDAtenciones.get_turn_number()
         CRUDAtenciones.create_object(hp=atencion.hp,
                                      trainer_name=atencion.trainer_name,
                                      trainer_id=atencion.trainer_id,
@@ -64,20 +65,26 @@ def crear_atencion(atencion: Atencion, current_user=Depends(get_current_user)):
                                      pokemon_id=atencion.pokemon_id,
                                      pokemon_info=atencion.pokemon_info,
                                      raw_id=id_generated,
-                                     user_id=user_id)
+                                     user_id=user_id,
+                                     turn_number=new_turn)
 
-        return { "id": id_generated }
+        return { "id": id_generated, "turn_number": new_turn }
 
     except Exception as e:
         print(f"Error: {e}", traceback.format_exc())
         return FastApiResponse.failure(str(e))
 
 
-@router.post('/bajar-prioridad')
-def bajar_prioridad(prioridad: Prioridad, current_user=Depends(get_current_user)):
+@router.post('/cambiar-prioridad')
+def cambiar_prioridad(prioridad: Prioridad, current_user=Depends(get_current_user)):
     try:
-        payload = { "turnNumber": prioridad.turn_number }
+        # obtengo cita anterior
+        cita_anterior = CRUDAtenciones.get_by_turn(prioridad.turn_number)
+        current_cita = CRUDAtenciones.get_by_id(prioridad.id)
+        if cita_anterior:
+            CRUDAtenciones.update_turn_by_id(raw_id=cita_anterior.get("rawId"), payload={ "turnNumber": current_cita.get("turnNumber") })
 
+        payload = { "turnNumber": prioridad.turn_number }
         CRUDAtenciones.update_turn_by_id(raw_id=prioridad.id, payload=payload)
 
         return FastApiResponse.successful
