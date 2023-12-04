@@ -28,16 +28,12 @@ class CRUDUsers:
 
     @staticmethod
     def get_by_username(username, status="active"):
-        try:
-            obj = Users.objects.filter(
-                username=username, status=status).limit(1)
-            if obj:
-                return obj[0]
-            else:
-                raise Exception("UserNotFound")
-        except Exception as e:
-            print(f"Error: {e}")
-            raise e
+        obj = Users.objects.filter(
+            username=username, status=status).limit(1)
+        if obj:
+            return obj[0]
+        else:
+            return None
         
     
     @staticmethod
