@@ -56,7 +56,7 @@ class CRUDAtenciones:
             data = list(map(lambda transaction: transaction.to_mongo(), data))
 
             turns_with_numbers = list(filter(lambda x: x.get("turnNumber"), data))
-            turns_with_numbers = list(map(lambda x: x | { "new_turnNumber": x.get("turnNumber") - 1 }, turns_with_numbers))
+            turns_with_numbers = list(map(lambda x: { **x, "new_turnNumber": x.get("turnNumber") - 1 }, turns_with_numbers))
             turns_with_no_numbers = list(filter(lambda x: not x.get("turnNumber"), data))
 
             # Sort the list of dictionaries by "turnNumber" in ascending order
