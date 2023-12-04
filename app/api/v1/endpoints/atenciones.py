@@ -113,7 +113,7 @@ def get_atenciones(atendidos="false", current_user=Depends(get_current_user)):
         result = CRUDAtenciones.get_items(atendidos=atendidos)
         for obt in result:
             item = {}
-            item["id"] = obt.get("raw_id")
+            item["id"] = obt.get("rawId")
             for field in list_of_fields:
                 item[field] = obt.get(field)
             

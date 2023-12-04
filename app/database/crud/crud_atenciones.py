@@ -48,9 +48,9 @@ class CRUDAtenciones:
         try:
             filters = {}
             if atendidos.lower() == "false":
-                filters["estado__ne"] = "atender"
+                filters["fechaAtencion__exists"] = False
             else:
-                filters["estado"] = "atender"
+                filters["fechaAtencion__exists"] = True
 
             data = Atenciones.objects.filter(**filters).order_by("+createdAt")
             data = list(map(lambda transaction: transaction.to_mongo(), data))
@@ -64,7 +64,7 @@ class CRUDAtenciones:
 
             merged_list = sorted(
                 turns_with_no_numbers + turns_with_numbers,
-                key=lambda x: (x.get("new_turnNumber", 0), x)  # Prioritize by turnNumber and then keep original order
+                key=lambda x: x.get("new_turnNumber", 0)  # Prioritize by turnNumber and then keep original order
             )
 
             return merged_list
