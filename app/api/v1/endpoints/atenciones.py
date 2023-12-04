@@ -32,6 +32,12 @@ class Atender(BaseModel):
     estado: str = "atender"
     comment: str = ""
 
+
+class Estado(BaseModel):
+    id: int
+    estado: str = "atender"
+
+
 class AtencionesResults(BaseModel):
     hp: Optional[int] = None
     trainerName: Optional[str] = None
@@ -104,6 +110,22 @@ def atender(atender: Atender, current_user=Depends(get_current_user)):
             }
 
         CRUDAtenciones.update_turn_by_id(raw_id=atender.id, payload=payload)
+
+        return FastApiResponse.successful
+
+    except Exception as e:
+        print(f"Error: {e}", traceback.format_exc())
+        return FastApiResponse.failure(str(e))
+    
+
+@router.post('/cambiar-estado')
+def cambiar_estado(estado: Estado, current_user=Depends(get_current_user)):
+    try:
+        payload = {
+            "estado": estado.estado
+            }
+
+        CRUDAtenciones.update_turn_by_id(raw_id=estado.id, payload=payload)
 
         return FastApiResponse.successful
 
