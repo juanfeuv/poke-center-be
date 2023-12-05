@@ -62,7 +62,7 @@ def crear_atencion(atencion: Atencion, current_user=Depends(get_current_user)):
         user_id = current_user.get("user_id")
         id_generated = int(time.time() * 1000)
         new_turn = CRUDAtenciones.get_turn_number()
-        CRUDAtenciones.create_object(hp=atencion.hp,
+        real_turn = CRUDAtenciones.create_object(hp=atencion.hp,
                                      trainer_name=atencion.trainer_name,
                                      trainer_id=atencion.trainer_id,
                                      cambio_estado=atencion.cambio_estado,
@@ -74,7 +74,7 @@ def crear_atencion(atencion: Atencion, current_user=Depends(get_current_user)):
                                      user_id=user_id,
                                      turn_number=new_turn)
 
-        return { "id": id_generated, "turn_number": new_turn }
+        return { "id": id_generated, "turn_number": real_turn }
 
     except Exception as e:
         print(f"Error: {e}", traceback.format_exc())

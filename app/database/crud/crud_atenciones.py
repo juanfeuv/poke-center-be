@@ -1,4 +1,5 @@
 from app.database.schema.atenciones import Atenciones
+from app.utils.utils import criterios_orden
 
 
 class CRUDAtenciones:
@@ -27,7 +28,21 @@ class CRUDAtenciones:
             user_id=user_id,
             turnNumber=turn_number
         ).save()
-        return h
+
+        data = Atenciones.objects.filter(fechaAtencion=None)
+        data = list(map(lambda transaction: transaction.to_mongo(), data))
+        data = sorted(data, key=criterios_orden)
+
+        new_turn = 1
+        
+        # Agrega la posición a cada elemento de la lista
+        for i, objeto in enumerate(data, start=1):
+            if raw_id == objeto.get("rawId"):
+                new_turn = i
+                
+            objeto.turnNumber = i
+            CRUDAtenciones.update_turn_by_id(raw_id=objeto.get("rawId"), payload={ "turnNumber": i })
+        return new_turn
     
 
     @staticmethod
@@ -91,22 +106,9 @@ class CRUDAtenciones:
             else:
                 filters["fechaAtencion__ne"] = None
 
-            data = Atenciones.objects.filter(**filters).order_by("+createdAt")
-            data = list(map(lambda transaction: transaction.to_mongo(), data))
-
-            turns_with_numbers = list(filter(lambda x: x.get("turnNumber"), data))
-            turns_with_numbers = list(map(lambda x: { **x, "new_turnNumber": x.get("turnNumber") - 1 }, turns_with_numbers))
-            turns_with_no_numbers = list(filter(lambda x: not x.get("turnNumber"), data))
-
-            # Sort the list of dictionaries by "turnNumber" in ascending order
-            turns_with_numbers = sorted(turns_with_numbers, key=lambda x: x["turnNumber"])
-
-            merged_list = sorted(
-                turns_with_no_numbers + turns_with_numbers,
-                key=lambda x: x.get("new_turnNumber", 0)  # Prioritize by turnNumber and then keep original order
-            )
-
-            return merged_list
-
+            data = Atenciones.objects.filter(**filters).order_by("+turnNumber")
+            return list(map(lambda transaction: transaction.to_mongo(), data))
         except Exception as e:
             raise e
+
+
