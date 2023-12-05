@@ -10,4 +10,4 @@ def criterios_orden(objeto):
     # Si hp y cambioEstado son iguales, menor nivel tiene más prioridad
     # Si hp, cambioEstado y nivel son iguales, menor createdAt tiene más prioridad
 
-    return (hp, len(cambio_estado) > 0, nivel, created_at)
+    return (hp, not cambio_estado, nivel, created_at)
